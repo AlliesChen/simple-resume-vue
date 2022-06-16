@@ -1,49 +1,46 @@
-<template>
-  <div class="flex justify-between mb-1 pr-10">
-    <p v-if="isSubmitted"><slot></slot></p>
-    <label v-else :for="labelId">{{ labelValue }}</label>
-    <input
-      ref="input"
-      class="ml-1 border"
-      :id="labelId"
-      :type="inputType"
-      :pattern="valueFormat"
-      :required="isRequired"
-      :value="inputValue"
-      @blur="checkValidity"
-      @input="checkValidity"
-    />
-  </div>
-</template>
-
-<script>
-// ^|
-export default {
-  name: 'InfoBlock',
-  data () {
-    return {
-
-    }
-  },
-  computed: {
-    labelValue () {
-      return this.labelId[0].toUpperCase() + this.labelId.slice(1) + ':'
+<script setup>
+import { ref, defineProps, inject } from "vue";
+const props = defineProps({
+  info: {
+    type: Object,
+    default() {
+      return {
+        id: "",
+        value: "",
+        format: "",
+        errMsg: "",
+      };
     },
-    valueFormat () {
-      return this.inputPattern.format
-    },
-    onInvalidMsg () {
-      return this.inputPattern.errMsg
-    }
   },
-  methods: {
-    checkValidity () {
-      if (this.$refs.input.validity.patternMismatch) {
-        this.$refs.input.setCustomValidity(this.onInvalidMsg)
-      } else {
-        this.$refs.input.setCustomValidity('')
-      }
+  inputType: {
+    type: String,
+    default: "text",
+  },
+});
+const userInput = ref(props.info.value);
+const submitted = inject("submitted")
+function checkValidity(e) {
+  if (e.target.validity.patternMismatch) {
+    if (props.info.errMsg) {
+      e.target.setCustomValidity(props.info.errMsg);
     }
+    e.target.reportValidity();
   }
 }
 </script>
+
+<template>
+  <p v-if="submitted()">{{ info }}</p>
+  <div v-else class="w-full flex justify-around">
+    <label :for="info.id"><slot></slot></label>
+    <input
+      class="border rounded px-2"
+      :type="inputType"
+      :pattern="info.format"
+      :id="info.id"
+      :name="info.id"
+      v-model="userInput"
+      @blur="checkValidity"
+    />
+  </div>
+</template>

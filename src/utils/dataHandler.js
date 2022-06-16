@@ -1,0 +1,51 @@
+const _userInfo = {
+  general: {
+    name: "",
+    email: "",
+    phone: "",
+  },
+  education: {
+    school: "",
+    title: "",
+    date: "",
+  },
+  job: {
+    company: "",
+    position: "",
+    description: "",
+    since: "",
+    until: "",
+  },
+};
+
+const VALIDATION = Object.freeze({
+  TEXT: {
+    format: "[^-0-9._!&\x22`'#%,:;<>=@{}~$()*+/\\?\\x5B\\x5D^|]+",
+    errMsg: "Please using words only",
+  },
+  EMAIL: {
+    format: "[^@ \t\r\n]+@[^@ \t\r\n]+\\.[^@ \t\r\n]+",
+    // errMsg: use browser default message
+  },
+  NUMBER: {
+    format: "[0-9]+",
+    errMsg: "Please use numbers only",
+  },
+});
+
+function checkLocal() {
+  return localStorage.getItem("appData");
+}
+
+const appData = () => {
+  const res = checkLocal()
+  if (res) {
+    const data = JSON.parse(res)
+    return data
+  } else {
+    localStorage.setItem("appData", JSON.stringify(_userInfo));
+    return appData()
+  }
+}
+
+export { appData, VALIDATION };
