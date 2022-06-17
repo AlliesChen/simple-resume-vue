@@ -6,22 +6,24 @@ const _userInfo = {
   },
   education: {
     school: "",
-    title: "",
-    date: "",
+    major: "",
+    degree: "",
+    since: "",
+    end: ""
   },
   job: {
     company: "",
     position: "",
     description: "",
     since: "",
-    until: "",
+    end: "",
   },
 };
 
 const VALIDATION = Object.freeze({
   TEXT: {
     format: "[^-0-9._!&\x22`'#%,:;<>=@{}~$()*+/\\?\\x5B\\x5D^|]+",
-    errMsg: "Please using words only",
+    errMsg: "Please using words and space only",
   },
   EMAIL: {
     format: "[^@ \t\r\n]+@[^@ \t\r\n]+\\.[^@ \t\r\n]+",
@@ -37,6 +39,17 @@ function checkLocal() {
   return localStorage.getItem("appData");
 }
 
+function storeLocal(data) {
+  const { to, ...items } = data
+  if (_userInfo[to]) {
+    _userInfo[to] = items
+  } else {
+    console.log("the section does not exist")
+  }
+  localStorage.setItem("appData", JSON.stringify(_userInfo));
+  return localStorage.getItem("appData");
+}
+
 const appData = () => {
   const res = checkLocal()
   if (res) {
@@ -48,4 +61,4 @@ const appData = () => {
   }
 }
 
-export { appData, VALIDATION };
+export { appData, VALIDATION, storeLocal };
